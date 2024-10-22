@@ -6,7 +6,11 @@
             <script type="text/javascript" src="../Common/webgl-utils.js"></script>
             <script type="text/javascript" src="../Common/initShaders.js"></script>
             <script type="text/javascript" src="../Common/MV.js"></script>
+            <script type="text/javascript" src="Game.js"></script>
+            <script type="text/javascript" src="tools.js"></script>
+            <script type="text/javascript" src="UI.js"></script>
             <script type="text/javascript" src="Project2.js"></script>
+
             
             <script type="x-shader/x-vertex" id="vertex-shader">
                 attribute vec4 myPosition;
@@ -36,17 +40,20 @@
                 </script>
             
             <script type="x-shader/x-fragment" id="fragment-shader">
+                uniform mediump vec4 color;
+
                 void main() {
-                    gl_FragColor = vec4( 0.0, 1.0, 0.0, 1.0 );
+                    gl_FragColor = color;
                 }
             </script>
     </head>
     
-    <body onload="init()">
-        <canvas width="512" height="512" id="gl-canvas" onmousedown="createNewObjects(event)">
+    <body onload="init()" onkeydown="receiveInput(event)">
+        <canvas width="768" height="768" id="gl-canvas" onclick="createNewObjects(event)">
         </canvas>
         <br>
-        <button onclick="ClearScreen()">Clear Canvas</button>
+        <!-- <button onclick="ClearScreen()">Clear Canvas</button>
+        <button onclick="listItems()">Show Items</button> -->
     </body>
 </html>
 
