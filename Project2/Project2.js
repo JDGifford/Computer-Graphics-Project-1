@@ -55,7 +55,7 @@ function init() {
 
     drawList = [];
     drawOffset = 0.0;
-    SceneRoot = new Node(0.0, 0.0, null, null, 1.0);
+    SceneRoot = new Node(0.0, 0.0, null, null, [1.0, 1.0]);
 
     game = new Game();
     game.addObject(SceneRoot);
@@ -106,7 +106,7 @@ function addSquare(pX, pY, parent) {
 
     var newBuffer = gl.createBuffer()
     
-    var square = new Node(pX, pY, new Shape(arrayOfPoints, [Math.random(), Math.random(), Math.random(), 1.0], newBuffer, gl.TRIANGLE_FAN), parent, 0.5 + Math.random()*2);
+    var square = new Node(pX, pY, new Shape(arrayOfPoints, [Math.random(), Math.random(), Math.random(), 1.0], newBuffer, gl.TRIANGLE_FAN), parent, 0.5 + [Math.random()*2, Math.random()*2]);
     //var square = new Shape(arrayOfPoints, newBuffer);
 
     return square;
@@ -122,19 +122,19 @@ function drawObjects(shp)
     });
 }
 
-function draw(obj,index)
+function draw(obj)
 { 
-    gl.bindBuffer( gl.ARRAY_BUFFER, obj.shape.buffer);
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(obj.shape.points), gl.STATIC_DRAW );
+        gl.bindBuffer( gl.ARRAY_BUFFER, obj.shape.buffer);
+        gl.bufferData( gl.ARRAY_BUFFER, flatten(obj.shape.points), gl.STATIC_DRAW );
 
-    gl.vertexAttribPointer( myPositionAttribute, 2, gl.FLOAT, false, 0, 0 );
+        gl.vertexAttribPointer( myPositionAttribute, 2, gl.FLOAT, false, 0, 0 );
 
-    MJS = convertMat3ToArray(obj.getPosition());;
-    gl.uniformMatrix3fv(MUniform, false, MJS);
+        MJS = convertMat3ToArray(obj.getPosition());;
+        gl.uniformMatrix3fv(MUniform, false, MJS);
 
-    gl.uniform4fv(colorUniform, obj.shape.color);
+        gl.uniform4fv(colorUniform, obj.shape.color);
 
-    gl.drawArrays(obj.shape.drawtype, 0, obj.shape.points.length);
+        gl.drawArrays(obj.shape.drawtype, 0, obj.shape.points.length);;
 }
 
 function stopStartAnim() {
@@ -162,9 +162,6 @@ function render() {
     
 }
 
-
-
-
 function listItems()
 {
     var b = game.findChildren(SceneRoot);
@@ -176,18 +173,24 @@ function listItems()
 
 function receiveInput(event)
 {
+    if(event.key == "a")
+    {
+        game.selectColumns(-1);
+    }
+    if(event.key == "d")
+    {
+        game.selectColumns(1);
+    }
+
     if (!game.isBusy())
     {
         if (event.key == "x")
         {
-            var swapper = new swapAnimation(game.columnBases[0], game.columnBases[1], 1000.0);
+            game.swapColumns();
+            
+            //var swapper = new swapAnimation(game.columnBases[1], game.columnBases[2], 1000.0);
 
-            game.animations.push(swapper);
-
-            //game.animations.push
-            //var temp = game.columnBases[1].position;
-            //game.columnBases[1].position = game.columnBases[0].position;
-            //game.columnBases[0].position = temp;
+            //game.animations.push(swapper);
         }
     }
 }

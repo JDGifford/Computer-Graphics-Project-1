@@ -11,7 +11,7 @@ class Node
 
         if (scale === undefined)
         {
-            this.scale = 1.0;
+            this.scale = [1.0, 1.0];
         }
         else
         {
@@ -21,12 +21,12 @@ class Node
 
     getTransformMatrix()
     {
-        return mat3(this.scale,
+        return mat3(this.scale[0],
                     0.0,
                     0.0,
 
                     0.0,
-                    this.scale,
+                    this.scale[1],
                     0.0,
 
                     this.position[0],
@@ -80,6 +80,11 @@ class Node
             return "No name given";
         }
     }
+
+    setScale(value)
+    {
+        this.scale = value;
+    }
 }
 
 function Shape(points, color, buffer, drawtype)
@@ -90,13 +95,15 @@ function Shape(points, color, buffer, drawtype)
     this.drawtype = drawtype;
 }
 
-
 class Game
 {
     columnBases;
     objectList;
     columnSize;
     animations;
+    player;
+
+    selectorLocation = 1;
 
     constructor()
     {
@@ -104,6 +111,7 @@ class Game
         this.columnSize = 8;
         this.columnBases = [];
         this.animations = [];
+        this.selectorLocation = 1;
     }
 
     isBusy()
@@ -155,15 +163,20 @@ class Game
     {
         // Setup UI
         // Draw border
-        var border = this.addObject(new Node(0.0, 0.0, new Shape([vec2(-0.5, 0.9), vec2(0.5, 0.9), vec2(0.5, -0.9), vec2(-0.5, -0.9)], [1.0, 1.0, 1.0, 1.0], gl.createBuffer(), gl.LINE_LOOP), this.getSceneRoot(),1))
+        var border = this.addObject(new Node(0.0, 0.0, new Shape([vec2(-0.5, 0.7), vec2(0.5, 0.7), vec2(0.5, -0.9), vec2(-0.5, -0.9)], [1.0, 1.0, 1.0, 1.0], gl.createBuffer(), gl.LINE_LOOP), this.getSceneRoot()));
+        this.addObject(new Node(0.0, 0.0, new Shape([vec2(-0.5, 0.7), vec2(0.5, 0.7), vec2(0.5, 0.9), vec2(-0.5, 0.9)], [1.0, 1.0, 1.0, 1.0], gl.createBuffer(), gl.LINE_LOOP), this.getSceneRoot()));
 
         // draw the column platforms
-        this.columnBases.push(this.addObject(new Node(-0.3, -0.65, new Shape([vec2(-0.08, 0.0), vec2(0.08, 0.0)], [1.0, 0.0, 0.0, 1.0], gl.createBuffer(), gl.LINE_LOOP), border)));
-        this.columnBases.push(this.addObject(new Node(-0.1, -0.65, new Shape([vec2(-0.08, 0.0), vec2(0.08, 0.0)], [0.0, 1.0, 0.0, 1.0], gl.createBuffer(), gl.LINE_LOOP), border)));
-        this.columnBases.push(this.addObject(new Node( 0.1, -0.65, new Shape([vec2(-0.08, 0.0), vec2(0.08, 0.0)], [0.0, 0.5, 1.0, 1.0], gl.createBuffer(), gl.LINE_LOOP), border)));
-        this.columnBases.push(this.addObject(new Node( 0.3, -0.65, new Shape([vec2(-0.08, 0.0), vec2(0.08, 0.0)], [1.0, 1.0, 0.0, 1.0], gl.createBuffer(), gl.LINE_LOOP), border)));
+        this.columnBases.push(this.addObject(new Node(-0.3, -0.65, new Shape([vec2(-0.08, 0.0), vec2(0.08, 0.0)], [1.0, 0.0, 0.0, 1.0], gl.createBuffer(), gl.LINE_STRIP), border)));
+        this.columnBases.push(this.addObject(new Node(-0.1, -0.65, new Shape([vec2(-0.08, 0.0), vec2(0.08, 0.0)], [0.0, 1.0, 0.0, 1.0], gl.createBuffer(), gl.LINE_STRIP), border)));
+        this.columnBases.push(this.addObject(new Node( 0.1, -0.65, new Shape([vec2(-0.08, 0.0), vec2(0.08, 0.0)], [0.0, 0.5, 1.0, 1.0], gl.createBuffer(), gl.LINE_STRIP), border)));
+        this.columnBases.push(this.addObject(new Node( 0.3, -0.65, new Shape([vec2(-0.08, 0.0), vec2(0.08, 0.0)], [1.0, 1.0, 0.0, 1.0], gl.createBuffer(), gl.LINE_STRIP), border)));
+
+        this.player = this.addObject(new Node(0.0, -0.75, new Shape([vec2(-0.1, 0.1), vec2(-0.1, 0.05), vec2(0.0, 0.0), vec2(0.1, 0.05), vec2(0.1, 0.1),], [1.0, 1.0, 1.0, 1.0], gl.createBuffer(), gl.LINE_STRIP), border));
 
         this.columnAnimations = [];
+
+        var c = this.addObject(new GameBlock(-0.3, -0.58, "square", [1.0, 1.0, 1.0, 1.0], gl.createBuffer(), gl.LINE_LOOP), border);
         //this.Columns = [[],[],[],[]];
     }
 
@@ -179,6 +192,38 @@ class Game
                 a.animate();
             }
         })
-        console.log(this.animations.length);
+    }
+
+    swapColumns()
+    {
+        this.animations.push(new swapAnimation(this.columnBases[this.selectorLocation], this.columnBases[this.selectorLocation + 1], 200.0));
+        var hold = this.columnBases[this.selectorLocation];
+        this.columnBases[this.selectorLocation] = this.columnBases[this.selectorLocation + 1];
+        this.columnBases[this.selectorLocation + 1] = hold;
+
+        this.animations.push(new flipX(this.player, 200.0));
+
+        //swap all the blocks in the columns too
+    }
+
+    selectColumns(direction)
+    {
+        this.selectorLocation += direction;
+
+
+        if (this.selectorLocation > 2)
+        {
+            this.selectorLocation = 2;
+        }
+        else if (this.selectorLocation < 0)
+        {
+            this.selectorLocation = 0;
+        }
+        else
+        {
+            this.player.moveNode(direction * 0.2, 0.0);
+        }
     }
 }
+
+

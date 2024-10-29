@@ -75,3 +75,45 @@ function multiplyMat3(a, b) {
         }
     }
   }
+
+ class flipX
+ {
+    constructor(item, length)
+    {
+        this.obj = item;
+        this.length = length;
+
+        this.timer = 0.0;
+        this.finished = false;
+
+        this.start = item.scale[0];
+        this.goal = -item.scale[0];
+    }
+
+    animate()
+    {
+        var t = this.timer/this.length
+
+        var value = this.start + t*(this.goal - this.start);
+    
+        var newScale = [value, 1.0];
+
+
+        this.obj.setScale(newScale);
+        this.timer += 10;
+
+        if (this.timer >= this.length)
+        {
+            if (this.goal < 0)
+            {
+                this.obj.setScale([-1, 1]);
+            }
+            else
+            {
+                this.obj.setScale([1, 1]);
+            }
+            this.finished = true;
+        }
+    }
+ }
+ 
