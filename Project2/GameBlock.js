@@ -23,10 +23,11 @@ function CreateCenter(t)
     else if (t == "circle")
     {
         var points = [];
+        var radius = 0.035;
 
         for (let i = 0; i < 10; i++)
         {
-            points.push(vec2( Math.sin(i* Math.PI/10), Math.cos(i * Math.PI/10) ));
+            points.push(vec2( Math.sin(i* Math.PI/5)*radius, Math.cos(i * Math.PI/5)*radius ));
         }
 
         center = new Shape(points, [1.0, 0.0, 1.0, 1.0], gl.createBuffer(), gl.TRIANGLE_FAN);

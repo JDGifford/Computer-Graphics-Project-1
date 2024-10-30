@@ -124,17 +124,20 @@ function drawObjects(shp)
 
 function draw(obj)
 { 
-        gl.bindBuffer( gl.ARRAY_BUFFER, obj.shape.buffer);
-        gl.bufferData( gl.ARRAY_BUFFER, flatten(obj.shape.points), gl.STATIC_DRAW );
+    for (i = 0; i < obj.shape.length; i++)
+    {
+        gl.bindBuffer( gl.ARRAY_BUFFER, obj.shape[i].buffer);
+        gl.bufferData( gl.ARRAY_BUFFER, flatten(obj.shape[i].points), gl.STATIC_DRAW );
 
         gl.vertexAttribPointer( myPositionAttribute, 2, gl.FLOAT, false, 0, 0 );
 
         MJS = convertMat3ToArray(obj.getPosition());;
         gl.uniformMatrix3fv(MUniform, false, MJS);
 
-        gl.uniform4fv(colorUniform, obj.shape.color);
+        gl.uniform4fv(colorUniform, obj.shape[i].color);
 
-        gl.drawArrays(obj.shape.drawtype, 0, obj.shape.points.length);;
+        gl.drawArrays(obj.shape[i].drawtype, 0, obj.shape[i].points.length);
+    }
 }
 
 function stopStartAnim() {

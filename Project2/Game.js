@@ -7,7 +7,15 @@ class Node
         this.position = vec3(px, py, 1.0);
         this.shape = shape;
         this.parent = parent;    
-        
+
+        if (Array.isArray(shape))
+        {
+            this.shape = shape;
+        }
+        else
+        {
+            this.shape = [shape];
+        }
 
         if (scale === undefined)
         {
@@ -36,7 +44,7 @@ class Node
     
     hasShape()
     {
-        if (this.shape == null)
+        if (this.shape[0] == null)
             return false;
         else
             return true;
@@ -176,8 +184,8 @@ class Game
 
         this.columnAnimations = [];
 
-        var c = this.addObject(new GameBlock(-0.3, -0.58, "square", [1.0, 1.0, 1.0, 1.0], gl.createBuffer(), gl.LINE_LOOP), border);
-        //this.Columns = [[],[],[],[]];
+        var c = this.addObject(new Node(0.0, 0.2, [CreateBorder(), CreateCenter("circle")], border));
+        //his.Columns = [[],[],[],[]];
     }
 
     runAnimations()
