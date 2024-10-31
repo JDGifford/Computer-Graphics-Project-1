@@ -185,6 +185,11 @@ function receiveInput(event)
         game.selectColumns(1);
     }
 
+    if(event.key == "p")
+        {
+            console.log(game.columns[0]);
+        }
+
     if (!game.isBusy())
     {
         if (event.key == "x")

@@ -1,8 +1,11 @@
 class GameBlock extends Node
 {
+    falling;
+
     constructor(px, py, shape, parent, scale)
     {
-        super(px, py, CreateCenter(shape), parent, scale);
+        super(px, py, [CreateBorder(), CreateCenter(shape)], parent, scale);
+        this.falling = false;
     }
 }
 
@@ -16,29 +19,29 @@ function CreateCenter(t)
 {   
     var center;
 
-    if (t == "square")
+    if (t == "square" || t == 0)
     {
         center = new Shape([vec2(-0.025, -0.025), vec2(-0.025, 0.025), vec2(0.025, 0.025), vec2(0.025, -0.025)], [1.0, 0.0, 0.0, 1.0], gl.createBuffer(), gl.TRIANGLE_FAN);
     }
-    else if (t == "circle")
+    else if (t == "circle" || t == 1)
     {
         var points = [];
-        var radius = 0.035;
+        var radius = 0.025;
 
         for (let i = 0; i < 10; i++)
         {
             points.push(vec2( Math.sin(i* Math.PI/5)*radius, Math.cos(i * Math.PI/5)*radius ));
         }
 
-        center = new Shape(points, [1.0, 0.0, 1.0, 1.0], gl.createBuffer(), gl.TRIANGLE_FAN);
+        center = new Shape(points, [0.0, 0.5, 1.0, 1.0], gl.createBuffer(), gl.TRIANGLE_FAN);
     }
-    else if (t == "triangle")
+    else if (t == "triangle" || t == 2)
     {
-        center = new Shape([vec2(-0.05, -0.05), vec2(0.05, -0.05), vec2(0.0, 0.05)], [0.0, 1.0, 0.0, 1.0], gl.createBuffer(), gl.TRIANGLE_FAN);
+        center = new Shape([vec2(-0.025, -0.025), vec2(0.025, -0.025), vec2(0.0, 0.025)], [0.0, 1.0, 0.0, 1.0], gl.createBuffer(), gl.TRIANGLE_FAN);
     }
-    else if (t == "diamond")
+    else if (t == "diamond" || t == 3)
     {
-        center = new Shape([vec2(0.0, 0.05), vec2(0.05, 0.0), vec2(0.0, -0.05), vec2(-0.05, 0.0)], [1.0, 1.0, 0.0, 1.0], gl.createBuffer(), gl.TRIANGLE_FAN);
+        center = new Shape([vec2(0.0, 0.025), vec2(0.025, 0.0), vec2(0.0, -0.025), vec2(-0.025, 0.0)], [1.0, 1.0, 0.0, 1.0], gl.createBuffer(), gl.TRIANGLE_FAN);
     }
 
     return center;

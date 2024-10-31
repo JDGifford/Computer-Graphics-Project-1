@@ -117,3 +117,31 @@ function multiplyMat3(a, b) {
     }
  }
  
+ class swapLocation
+ {
+   constructor(obj1, destination, length)
+   {
+       this.obj1 = obj1;
+
+       this.startPoint = obj1.position[0];
+       this.endPoint = destination[0];
+       this.timer = 0.0;
+       this.length = length;
+       this.finished = false;
+   }
+
+   animate()
+   {
+       var p = this.startPoint + (this.endPoint - this.startPoint)*Math.min(this.timer/this.length, 1.0);
+
+       this.obj1.position[0] = p;
+
+       this.timer += 10;
+
+       if (this.timer > this.length)
+       {
+           this.obj1.position[0] = this.endPoint;
+           this.finished = true;
+       }
+   }
+ }
