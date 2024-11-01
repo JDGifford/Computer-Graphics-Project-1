@@ -218,7 +218,7 @@ class Game
 
 tickTimer = 0.0;
 tickLimit = 100.0;
-tickRate = 1.0;
+tickRate = 3.0;
     update()
     {
         this.tickTimer += this.tickRate;
@@ -260,61 +260,48 @@ tickRate = 1.0;
         var t = this.columnBases[this.selectorLocation];
         this.columnBases[this.selectorLocation] = this.columnBases[this.selectorLocation + 1];
         this.columnBases[this.selectorLocation + 1] = t;
-
-        // Will need to change this so that empty blocks can swap columns, perhaps by feeding column offsets rather than swaps?
-        /*for (let a = 0; a < columnMax; a++)
-        {
-            if(this.columns[this.selectorLocation][a] != null)
-            {
-                this.animations.push( new swapLocation(this.columns[this.selectorLocation][a], add(columnOffsets[this.selectorLocation + 1], vec2(0.0, blockGap*a)), swapSpeed));
-            }
-
-            if(this.columns[this.selectorLocation+1][a] != null)
-            {
-               this.animations.push( new swapLocation(this.columns[this.selectorLocation+1][a], add(columnOffsets[this.selectorLocation], vec2(0.0, blockGap*a)), swapSpeed));
-            }
-        }*/
-
             
         for (let b = 0; b < 10; b++)
         {
-            if(this.columns[this.selectorLocation][b] != null)
+            // Still need to account for falling cases though
+            if(this.columns[this.selectorLocation][b] != null || this.columns[this.selectorLocation + 1][b] != null)
             {
-                if(this.columns[this.selectorLocation][b].falling)
+                if(this.columns[this.selectorLocation][b] != null)
                 {
-                    if(this.columns[this.selectorLocation + 1][b] == null)
+                    if (this.columns[this.selectorLocation][b].falling)
                     {
-                        this.columns[this.selectorLocation + 1][b] = this.columns[this.selectorLocation][b];
-                        this.columns[this.selectorLocation][b] = null;
+                        if(this.columns[this.selectorLocation + 1][b] != null && !this.columns[this.selectorLocation + 1][b].falling)
+                        {
+                            this.animations.push( new swapLocation(this.columns[this.selectorLocation][b], add(columnOffsets[this.selectorLocation + 1], vec2(0.0, blockGap*b)), swapSpeed));
+                        }
+                    }
+                    else
+                    {
                         this.animations.push( new swapLocation(this.columns[this.selectorLocation][b], add(columnOffsets[this.selectorLocation + 1], vec2(0.0, blockGap*b)), swapSpeed));
                     }
                 }
-                else
+                
+                if(this.columns[this.selectorLocation+1][b] != null)
+                    {
+                        if (this.columns[this.selectorLocation+1][b].falling)
+                        {
+                            if(this.columns[this.selectorLocation][b] != null && !this.columns[this.selectorLocation][b].falling)
+                            {
+                                this.animations.push( new swapLocation(this.columns[this.selectorLocation + 1][b], add(columnOffsets[this.selectorLocation], vec2(0.0, blockGap*b)), swapSpeed));
+                            }
+                        }
+                        else
+                        {
+                            this.animations.push( new swapLocation(this.columns[this.selectorLocation + 1][b], add(columnOffsets[this.selectorLocation], vec2(0.0, blockGap*b)), swapSpeed));
+                        }
+                    }
+
+                if (this.columns[this.selectorLocation][b] != null && !this.columns[this.selectorLocation][b].falling 
+                    || this.columns[this.selectorLocation + 1][b] != null && !this.columns[this.selectorLocation+ 1][b].falling)
                 {
                     var hold = this.columns[this.selectorLocation][b];
                     this.columns[this.selectorLocation][b] = this.columns[this.selectorLocation + 1][b];
-                    this.columns[this.selectorLocation + 1] = hold
-                    this.animations.push( new swapLocation(this.columns[this.selectorLocation][b], add(columnOffsets[this.selectorLocation + 1], vec2(0.0, blockGap*b)), swapSpeed));
-                }
-            }
-
-            if(this.columns[this.selectorLocation + 1][b] != null)
-            {
-                if(this.columns[this.selectorLocation + 1][b].falling)
-                {
-                    if(this.columns[this.selectorLocation][b] == null)
-                    {
-                        this.columns[this.selectorLocation][b] = this.columns[this.selectorLocation + 1][b];
-                        this.columns[this.selectorLocation + 1][b] = null;
-                        this.animations.push( new swapLocation(this.columns[this.selectorLocation + 1][b], add(columnOffsets[this.selectorLocation], vec2(0.0, blockGap*b)), swapSpeed));
-                    }
-                }
-                else
-                {
-                    var hold = this.columns[this.selectorLocation + 1][b];
-                    this.columns[this.selectorLocation + 1][b] = this.columns[this.selectorLocation][b];
-                    this.columns[this.selectorLocation] = hold
-                    this.animations.push( new swapLocation(this.columns[this.selectorLocation + 1][b], add(columnOffsets[this.selectorLocation], vec2(0.0, blockGap*b)), swapSpeed));
+                    this.columns[this.selectorLocation + 1][b] = hold;
                 }
             }
         }
@@ -408,11 +395,13 @@ tickRate = 1.0;
                         if (a == 1)
                         {
                             column[a-1].falling = false;
+                            column[a-1].showBorder();
                         }
                     }
-                    else if (column[a-1].falling == false)
+                    else if (column[a-1].falling == false && column[a].falling == true)
                     {
                         column[a].falling = false;
+                        column[a].showBorder();
                     }
                 }
             }

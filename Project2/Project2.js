@@ -187,7 +187,7 @@ function receiveInput(event)
 
     if(event.key == "p")
         {
-            console.log(game.columns[0]);
+            console.log(game.columns);
         }
 
     if (!game.isBusy())

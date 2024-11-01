@@ -1,11 +1,20 @@
 class GameBlock extends Node
 {
     falling;
+    borderShowing = false;
+    border;
 
     constructor(px, py, shape, parent, scale)
     {
-        super(px, py, [CreateBorder(), CreateCenter(shape)], parent, scale);
+        super(px, py, [CreateCenter(shape)], parent, scale);
+
+        this.border = CreateBorder();
         this.falling = false;
+    }
+
+    showBorder()
+    {
+        this.shape = [this.border, this.shape[0]];
     }
 }
 
